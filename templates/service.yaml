@@ -95,51 +95,12 @@ Resources:
       Cpu: 256
       NetworkMode: !If [ Fargate, "awsvpc", "bridge" ]
       ExecutionRoleArn: !Ref TaskExecutionRole
-      Volumes:
-        - Name: mysql-data
-          Host: 
-            SourcePath: /home/ec2-user/mysql-data      
       ContainerDefinitions:
-        - Name: mysql
-          Image: mysql
-          #Command:
-          # - "mysqld --max_allowed_packet=30M"
-          #Command: CMD cmysqld --max_allowed_packet=30
-          Essential: true
-          Memory: 512
-          Environment: 
-            - Name: TZ
-              Value: Australia/Melbourne
-            - Name: MYSQL_ROOT_PASSWORD
-              Value: 'testing'
-          PortMappings:
-            - ContainerPort: 3306
-              HostPort: 3306
-          LogConfiguration:
-            LogDriver: awslogs
-            Options:
-                awslogs-group: !Sub ${GitBranch}--${DomainNameDashed}
-                awslogs-region: !Ref AWS::Region
-          MountPoints:
-              - ContainerPath: /var/lib/mysql
-                SourceVolume: mysql-data
-                ReadOnly: False
-              # - ContainerPath: /etc/mysql/mysql.conf.d/mysqld.cnf
-              #   SourceVolume: mysql.conf.d
-                ReadOnly: False                        
-              # - ContainerPath: /docker-entrypoint-initdb.d
-              #   SourceVolume: databases
-              #   ReadOnly: False
         - Name: simple-app
-          Links:
-            - mysql        
-          Image: wordpress
+          Image: nginx
           Essential: true
           Memory: 512
           Cpu: 10
-          # MountPoints:
-          #   - SourceVolume: my-vol
-          #     ContainerPath: /var/www/my-vol
           PortMappings:
             - ContainerPort: 80
               HostPort: 80
