@@ -98,7 +98,7 @@ Resources:
       ContainerDefinitions:
         - Name: simple-app
           Image: nginx
-         Essential: true
+          Essential: true
           Memory: 256
           # MountPoints:
           #   - SourceVolume: my-vol
