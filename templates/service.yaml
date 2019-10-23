@@ -5,6 +5,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   Cluster:
     Type: String
+    Default: sta12347-development-Cluster-14N972CGKY0Z5
 
   DesiredCount:
     Type: Number
@@ -22,9 +23,11 @@ Parameters:
 
   SourceSecurityGroup:
     Type: AWS::EC2::SecurityGroup::Id
+    Default: sg-013b5a68d168bff27
 
   Subnets:
     Type: List<AWS::EC2::Subnet::Id>
+    Default: subnet-0c4e350a7b61db3ff,subnet-0a372ff5fa89d3e62
 
 
 Conditions:
@@ -97,13 +100,13 @@ Resources:
       ExecutionRoleArn: !Ref TaskExecutionRole
       ContainerDefinitions:
         - Name: simple-app
-          Image: nginx
+          Image: wordpress
           Essential: true
           Memory: 512
           Cpu: 10
           PortMappings:
             - ContainerPort: 80
-              HostPort: 80
+            # - ContainerPort: 22
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -112,8 +115,41 @@ Resources:
               awslogs-stream-prefix: !Ref AWS::StackName
           Environment: 
             - Name: TZ
-              Value: Australia/Melbourne            
-              
+              Value: Australia/Melbourne
+            - Name: WORDPRESS_DB_HOST
+              Value: 127.0.0.1:3306
+            - Name: WORDPRESS_DB_USER
+              Value: wordpress
+            - Name: WORDPRESS_DB_PASSWORD
+              Value: wordpress
+            - Name: WORDPRESS_DB_NAME
+              Value: domaincom
+
+        - Name: mysql
+          Image: mysql:5.7
+          Essential: true
+          Memory: 512
+          Cpu: 10
+          PortMappings:
+            - ContainerPort: 3306
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref AWS::StackName
+          Environment: 
+            - Name: TZ
+              Value: Australia/Melbourne
+            - Name: MYSQL_ROOT_PASSWORD
+              Value: password
+            - Name: MYSQL_DATABASE
+              Value: domaincom
+            - Name: MYSQL_USER
+              Value: wordpress
+            - Name: MYSQL_PASSWORD
+              Value: wordpress                            
+
   # TaskDefinition:
   #   Type: AWS::ECS::TaskDefinition
   #   Properties:
